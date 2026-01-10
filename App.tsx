@@ -3,7 +3,17 @@ import { Task, UserMode, Web3State } from './types';
 import { web3Service } from './services/web3Service';
 import TaskCard from './components/TaskCard';
 import CreateTaskModal from './components/CreateTaskModal';
+import PaymentNotification from './components/PaymentNotification';
 import Button from './components/Button';
+
+interface PaymentInfo {
+  taskId: number;
+  amount: string;
+  agentAddress: string;
+  timestamp: number;
+  status: 'pending' | 'confirmed' | 'received';
+  txHash?: string;
+}
 
 const SEPOLIA_CHAIN_ID = 11155111;
 
@@ -21,6 +31,24 @@ const App: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [loadingTasks, setLoadingTasks] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [paymentNotification, setPaymentNotification] = useState<PaymentInfo | null>(null);
+  const [userRole, setUserRole] = useState<'client' | 'agent' | 'both' | null>(null);
+
+  // Detect user role based on tasks
+  useEffect(() => {
+    if (tasks.length === 0) {
+      setUserRole(null);
+      return;
+    }
+
+    const isCreator = tasks.some(t => t.creator.toLowerCase() === web3State.address?.toLowerCase());
+    const isAgent = tasks.some(t => t.agent.toLowerCase() === web3State.address?.toLowerCase());
+
+    if (isCreator && isAgent) setUserRole('both');
+    else if (isCreator) setUserRole('client');
+    else if (isAgent) setUserRole('agent');
+    else setUserRole(null);
+  }, [tasks, web3State.address]);
 
   useEffect(() => {
     // We do NOT auto-connect here to ensure the button is always visible on load.
@@ -31,6 +59,30 @@ const App: React.FC = () => {
         window.ethereum.on('chainChanged', () => window.location.reload());
         window.ethereum.on('accountsChanged', () => window.location.reload());
     }
+
+    // Listen for task completion events (payment confirmation)
+    web3Service.onTaskCompleted(async (taskId: number) => {
+      const task = await web3Service.getTaskDetails(taskId);
+      if (task) {
+        setPaymentNotification({
+          taskId: taskId,
+          amount: task.amount,
+          agentAddress: task.agent,
+          timestamp: Date.now(),
+          status: 'received',
+          txHash: ''
+        });
+
+        // Refresh tasks after payment
+        setTimeout(() => {
+          fetchTasks();
+        }, 2000);
+      }
+    });
+
+    return () => {
+      web3Service.removeTaskCompletedListener();
+    };
   }, []);
 
   useEffect(() => {
@@ -42,6 +94,14 @@ const App: React.FC = () => {
   const connectWallet = async () => {
     setIsConnecting(true);
     try {
+        // Check if MetaMask is installed
+        if (!window.ethereum?.isMetaMask && !isMetaMaskInstalled()) {
+          // Open MetaMask installation page
+          window.open('https://metamask.io/download/', '_blank');
+          setIsConnecting(false);
+          return;
+        }
+
         // Pass false to ensure we force the MetaMask popup (not silent)
         const data = await web3Service.connect(false);
         if (data) {
@@ -57,6 +117,14 @@ const App: React.FC = () => {
     } finally {
         setIsConnecting(false);
     }
+  };
+
+  const isMetaMaskInstalled = (): boolean => {
+    if (window.ethereum?.isMetaMask) return true;
+    if (window.ethereum?.providers && Array.isArray(window.ethereum.providers)) {
+      return window.ethereum.providers.some((provider: any) => provider.isMetaMask);
+    }
+    return false;
   };
 
   const handleSwitchNetwork = async () => {
@@ -76,10 +144,16 @@ const App: React.FC = () => {
     }
   };
 
-  const isWrongNetwork = web3State.chainId !== SEPOLIA_CHAIN_ID && !web3Service.useMock;
+  const isWrongNetwork = web3State.chainId !== SEPOLIA_CHAIN_ID && web3State.isConnected;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+      {/* Payment Notification */}
+      <PaymentNotification 
+        payment={paymentNotification} 
+        onClose={() => setPaymentNotification(null)} 
+      />
+
       {/* Navbar */}
       <nav className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -107,11 +181,27 @@ const App: React.FC = () => {
              </div>
 
              {web3State.isConnected ? (
-                <div className="hidden sm:flex items-center gap-2 bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-700">
+                <div className="hidden sm:flex items-center gap-3">
+                  {userRole && (
+                    <div className={`px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 ${
+                      userRole === 'client' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
+                      userRole === 'agent' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' :
+                      'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
+                    }`}>
+                      <div className={`w-2 h-2 rounded-full ${
+                        userRole === 'client' ? 'bg-blue-400' :
+                        userRole === 'agent' ? 'bg-purple-400' :
+                        'bg-cyan-400'
+                      }`} />
+                      {userRole === 'client' ? 'Client' : userRole === 'agent' ? 'Agent' : 'Client & Agent'}
+                    </div>
+                  )}
+                  <div className="bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
                     <span className="text-sm font-mono text-slate-300">
                     {web3State.address?.slice(0, 6)}...{web3State.address?.slice(-4)}
                     </span>
+                  </div>
                 </div>
              ) : (
                 <Button 
@@ -156,7 +246,7 @@ const App: React.FC = () => {
             <p className="text-slate-400">
               {mode === 'CLIENT' 
                 ? 'Create tasks, escrow funds, and approve work.' 
-                : 'Browse assigned tasks and use Gemini to complete them.'}
+                : 'Browse assigned tasks and use EtherAgentAI to complete them.'}
             </p>
           </div>
           
@@ -173,7 +263,7 @@ const App: React.FC = () => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div className="text-sm text-blue-200">
-            <p className="font-semibold mb-1">System Status: {web3State.isConnected ? (web3Service.useMock ? "Demo Mode (Local Mock)" : "Connected to Sepolia") : "Not Connected"}</p>
+            <p className="font-semibold mb-1">System Status: {web3State.isConnected ? "Connected to Sepolia" : "Not Connected"}</p>
             <p className="opacity-80">
                 Current Contract: <code className="bg-blue-900/40 px-1 rounded">{(web3Service.escrowContract?.target as string) || "None"}</code>
             </p>
@@ -208,7 +298,7 @@ const App: React.FC = () => {
 
       {/* Footer */}
       <footer className="border-t border-slate-800 bg-slate-900 py-6 text-center text-slate-500 text-sm">
-        <p>&copy; 2024 EtherAgent Escrow. Built with React, Tailwind, and Gemini.</p>
+        <p>&copy; 2026 EtherAgent Escrow. Built with etherAgent.</p>
         <p className="mt-2 text-xs opacity-50">Contract Address: {(web3Service.escrowContract?.target as string) || "Not Deployed (Mock)"}</p>
       </footer>
 
