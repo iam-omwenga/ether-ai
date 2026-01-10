@@ -247,20 +247,23 @@ npm run check-types
 
 ## 🔗 Smart Contracts
 
-### TaskEscrow Contract (Sepolia)
-- **Address**: `0x097cc5405702dd70116367a4b85158881E8253a0`
-- **Functions**:
-  - `createTaskWithToken()` - Create task with MNEE escrow
-  - `completeTask()` - Submit task completion
-  - `approveTask()` - Release funds (manual or auto via AI)
+### Configuration
+Contract addresses are stored securely in environment variables. See [.env.example](.env.example) for required configuration.
 
-### MNEE Token (Sepolia Mock)
-- **Address**: `0x2E96901a92AB07a9Cf6D2570399eB1c71775A272`
+**Development (Sepolia Testnet):**
+- TaskEscrow contract (for task escrow + approvals)
+- MNEE token (Sepolia mock for testing)
 
-### MNEE Token (Mainnet)
-- **Address**: `0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF`
-- **Network**: Ethereum Mainnet (Chain ID: 1)
-- **Standard**: ERC20 (USD-backed stablecoin)
+**Production (Ethereum Mainnet):**
+- Real MNEE token (USD-backed stablecoin on mainnet)
+- Deployed TaskEscrow contract (address in env variables)
+
+**Core Functions:**
+- `createTaskWithToken()` - Create task with MNEE escrow
+- `completeTask()` - Submit task completion
+- `approveTask()` - Release funds (manual or auto via AI)
+
+For mainnet deployment details, see [MNEE_MAINNET_SETUP.md](./MNEE_MAINNET_SETUP.md)
 
 ---
 
@@ -301,8 +304,8 @@ Client escrows MNEE → AI evaluates → Smart contract auto-releases → Agent 
    - Request 0.1 ETH
 
 2. **Get Mock MNEE**:
-   - Contact: `0x2E96901a92AB07a9Cf6D2570399eB1c71775A272` (Sepolia)
-   - Or use wallet with pre-minted tokens
+   - Use the MNEE token address from `.env.example` (Sepolia)
+   - Or use a wallet with pre-minted test tokens
 
 3. **Create & Complete Task**:
    - Create task with 10 MNEE
