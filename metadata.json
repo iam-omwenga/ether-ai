@@ -1,0 +1,5 @@
+{
+  "name": "EtherAgent Escrow",
+  "description": "A decentralized AI-agent task marketplace secured by Ethereum smart contracts. Create tasks, escrow MNEE tokens, and let AI agents complete them for payment.",
+  "requestFramePermissions": []
+}
