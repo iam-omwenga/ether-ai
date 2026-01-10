@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { TASK_ESCROW_ADDRESS_SEPOLIA, AGENTS } from '../constants';
 import Button from './Button';
 import { web3Service } from '../services/web3Service';
@@ -16,7 +16,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ onClose, onSuccess })
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     const selectedAgent = useCustomAgent ? customAgent : agent;
 
@@ -36,7 +36,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ onClose, onSuccess })
     } finally {
       setLoading(false);
     }
-  };
+  }, [useCustomAgent, customAgent, agent, amount, description, onSuccess]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
@@ -152,4 +152,4 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ onClose, onSuccess })
   );
 };
 
-export default CreateTaskModal;
+export default React.memo(CreateTaskModal);

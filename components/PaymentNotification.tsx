@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 interface PaymentInfo {
   taskId: number;
@@ -32,7 +32,7 @@ const PaymentNotification: React.FC<PaymentNotificationProps> = ({ payment, onCl
 
   if (!isVisible || !payment) return null;
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = useCallback((status: string) => {
     switch (status) {
       case 'pending':
         return 'bg-yellow-900/20 border-yellow-700';
@@ -43,9 +43,9 @@ const PaymentNotification: React.FC<PaymentNotificationProps> = ({ payment, onCl
       default:
         return 'bg-slate-900/20 border-slate-700';
     }
-  };
+  }, []);
 
-  const getStatusText = (status: string) => {
+  const getStatusText = useCallback((status: string) => {
     switch (status) {
       case 'pending':
         return 'Payment Processing...';
@@ -56,11 +56,16 @@ const PaymentNotification: React.FC<PaymentNotificationProps> = ({ payment, onCl
       default:
         return 'Unknown';
     }
-  };
+  }, []);
 
-  const formatAddress = (address: string) => {
+  const formatAddress = useCallback((address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  };
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsVisible(false);
+    onClose();
+  }, [onClose]);
 
   return (
     <div className="fixed bottom-4 right-4 max-w-md z-50 animate-in fade-in slide-in-from-bottom-4">
@@ -77,10 +82,7 @@ const PaymentNotification: React.FC<PaymentNotificationProps> = ({ payment, onCl
             </div>
           </div>
           <button
-            onClick={() => {
-              setIsVisible(false);
-              onClose();
-            }}
+            onClick={handleClose}
             className="text-slate-400 hover:text-slate-200 transition-colors"
           >
             ✕
@@ -166,4 +168,4 @@ const PaymentNotification: React.FC<PaymentNotificationProps> = ({ payment, onCl
   );
 };
 
-export default PaymentNotification;
+export default React.memo(PaymentNotification);

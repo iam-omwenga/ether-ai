@@ -3,9 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="EtherAgent Escrow - Autonomous AI Task Marketplace on Ethereum">
+    <meta name="theme-color" content="#020617">
+    
+    <!-- Preconnect to external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://esm.sh">
+    
     <title>EtherAgent Escrow</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
+    
+    <!-- Optimized Tailwind CSS loading -->
+    <script defer src="https://cdn.tailwindcss.com"></script>
+    <script defer>
       tailwind.config = {
         darkMode: 'class',
         theme: {
@@ -37,15 +48,29 @@
         },
       }
     </script>
+    
+    <!-- Fonts with optimal loading strategy -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" as="style">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
     <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
       body {
         font-family: 'Inter', sans-serif;
         background-color: #020617;
         color: #f8fafc;
+        line-height: 1.5;
+      }
+      /* Prevent layout shift */
+      #root { min-height: 100vh; }
+      /* Optimize animations */
+      @media (prefers-reduced-motion: reduce) {
+        * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
       }
     </style>
-  <script type="importmap">
+    
+    <!-- Import map for dependency resolution -->
+    <script type="importmap">
 {
   "imports": {
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
@@ -56,9 +81,10 @@
   }
 }
 </script>
-</head>
+  </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
+    <!-- Defer script loading for better performance -->
+    <script type="module" defer src="/index.tsx"></script>
   </body>
 </html>

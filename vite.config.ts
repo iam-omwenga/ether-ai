@@ -9,7 +9,39 @@ export default defineConfig(({ mode }) => {
         port: 3000,
         host: '0.0.0.0',
       },
-      plugins: [react()],
+      build: {
+        // Code splitting for better caching
+        rollupOptions: {
+          output: {
+            manualChunks: {
+              'ethers-lib': ['ethers'],
+              'react-lib': ['react', 'react-dom'],
+              'gemini-lib': ['@google/genai'],
+            }
+          }
+        },
+        // Minify and optimize
+        minify: 'terser',
+        terserOptions: {
+          compress: {
+            drop_console: mode === 'production'
+          }
+        },
+        // Enable CSS code splitting
+        cssCodeSplit: true,
+        // Chunk size warnings
+        chunkSizeWarningLimit: 500,
+        // Source maps for production
+        sourcemap: false,
+        // Report compressed size
+        reportCompressedSize: false
+      },
+      plugins: [
+        react({
+          // Fast refresh for dev
+          fastRefresh: true
+        })
+      ],
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
@@ -17,6 +49,12 @@ export default defineConfig(({ mode }) => {
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),
+        }
+      },
+      optimize: {
+        // Enable dependency pre-bundling
+        esbuild: {
+          drop: mode === 'production' ? ['console'] : []
         }
       }
     };

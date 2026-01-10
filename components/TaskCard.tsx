@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Task, TaskStatus, UserMode } from '../types';
 import Button from './Button';
 import { generateAgentResponse, evaluateTaskCompletion, TaskEvaluation } from '../services/geminiService';
@@ -17,7 +17,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, mode, onRefresh }) => {
   const [evaluation, setEvaluation] = useState<TaskEvaluation | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const handleAIWork = async () => {
+  const handleAIWork = useCallback(async () => {
     setLoading(true);
     try {
         const aiResult = await generateAgentResponse(task.description);
@@ -28,9 +28,9 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, mode, onRefresh }) => {
     } finally {
         setLoading(false);
     }
-  };
+  }, [task.description]);
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
       if (!resultInput) return;
       setLoading(true);
       try {
@@ -69,7 +69,7 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, mode, onRefresh }) => {
           setLoading(false);
           setEvaluating(false);
       }
-  };
+  }, [task.id, task.agent, task.description, resultInput, onRefresh]);
 
   const handleApprove = async () => {
       setLoading(true);
@@ -286,4 +286,4 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, mode, onRefresh }) => {
   );
 };
 
-export default TaskCard;
+export default React.memo(TaskCard);

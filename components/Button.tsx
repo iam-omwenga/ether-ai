@@ -22,10 +22,12 @@ const Button: React.FC<ButtonProps> = ({
     ghost: "bg-transparent hover:bg-slate-800 text-slate-300 hover:text-white"
   };
 
+  const isDisabled = disabled || isLoading;
+
   return (
     <button 
-      className={`${baseStyles} ${variants[variant]} ${className} ${disabled || isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-      disabled={disabled || isLoading}
+      className={`${baseStyles} ${variants[variant]} ${className} ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+      disabled={isDisabled}
       {...props}
     >
       {isLoading ? (
@@ -41,4 +43,4 @@ const Button: React.FC<ButtonProps> = ({
   );
 };
 
-export default Button;
+export default React.memo(Button);

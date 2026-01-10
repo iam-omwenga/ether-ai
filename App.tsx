@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { Task, UserMode, Web3State } from './types';
 import { web3Service } from './services/web3Service';
 import TaskCard from './components/TaskCard';
 import CreateTaskModal from './components/CreateTaskModal';
 import PaymentNotification from './components/PaymentNotification';
 import Button from './components/Button';
+import { isMobileDevice } from './utils/mobileDetection';
 
 interface PaymentInfo {
   taskId: number;
@@ -91,13 +92,22 @@ const App: React.FC = () => {
     }
   }, [web3State.isConnected, web3State.address, web3State.chainId, mode]);
 
-  const connectWallet = async () => {
+  const connectWallet = useCallback(async () => {
     setIsConnecting(true);
     try {
         // Check if MetaMask is installed
         if (!window.ethereum?.isMetaMask && !isMetaMaskInstalled()) {
-          // Open MetaMask installation page
-          window.open('https://metamask.io/download/', '_blank');
+          // For mobile, offer MetaMask app
+          if (isMobileDevice()) {
+            const installApp = confirm(
+              "MetaMask not detected. Would you like to open the MetaMask app or install it?"
+            );
+            if (installApp) {
+              window.open('https://metamask.app.link/', '_blank');
+            }
+          } else {
+            window.open('https://metamask.io/download/', '_blank');
+          }
           setIsConnecting(false);
           return;
         }
@@ -117,21 +127,21 @@ const App: React.FC = () => {
     } finally {
         setIsConnecting(false);
     }
-  };
+  }, [web3State]);
 
-  const isMetaMaskInstalled = (): boolean => {
+  const isMetaMaskInstalled = useCallback((): boolean => {
     if (window.ethereum?.isMetaMask) return true;
     if (window.ethereum?.providers && Array.isArray(window.ethereum.providers)) {
       return window.ethereum.providers.some((provider: any) => provider.isMetaMask);
     }
     return false;
-  };
+  }, []);
 
-  const handleSwitchNetwork = async () => {
+  const handleSwitchNetwork = useCallback(async () => {
     await web3Service.switchNetwork(SEPOLIA_CHAIN_ID);
-  };
+  }, []);
 
-  const fetchTasks = async () => {
+  const fetchTasks = useCallback(async () => {
     if (!web3State.address) return;
     setLoadingTasks(true);
     try {
@@ -142,9 +152,12 @@ const App: React.FC = () => {
     } finally {
       setLoadingTasks(false);
     }
-  };
+  }, [web3State.address, mode]);
 
-  const isWrongNetwork = web3State.chainId !== SEPOLIA_CHAIN_ID && web3State.isConnected;
+  const isWrongNetwork = useMemo(
+    () => web3State.chainId !== SEPOLIA_CHAIN_ID && web3State.isConnected,
+    [web3State.chainId, web3State.isConnected]
+  );
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
