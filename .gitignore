@@ -17,10 +17,6 @@ dist-ssr
 .env.local
 .env.*.local
 
-# Sensitive configuration files
-# DO NOT COMMIT constants.ts - it contains API keys and private addresses
-constants.ts
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
