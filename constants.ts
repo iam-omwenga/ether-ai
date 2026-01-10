@@ -3,45 +3,33 @@
 // ============================================
 // Environment-based Configuration
 // ============================================
-// Load from environment variables for security
-// Fallback to defaults for development
+// All sensitive values (API keys, addresses) come from environment variables
+// NO hardcoded fallbacks - use .env.local locally, Vercel dashboard for production
 
-const getEnv = (key: string, defaultValue: string): string => {
+const getEnv = (key: string): string => {
   const value = import.meta.env[`VITE_${key}`];
-  if (!value && !defaultValue) {
-    console.warn(`⚠️ Environment variable VITE_${key} is not set`);
+  if (!value) {
+    throw new Error(
+      `❌ Missing environment variable: VITE_${key}\n` +
+      `See .env.example for required configuration.\n` +
+      `Local: Copy .env.example to .env.local and fill in your values.\n` +
+      `Vercel: Set in Vercel Project Settings → Environment Variables`
+    );
   }
-  return value || defaultValue;
+  return value;
 };
 
-// API Keys
-export const GEMINI_API_KEY = getEnv(
-  'GEMINI_API_KEY',
-  'AIzaSyDr0b20bs06T2EN9wo6LfKPlS0XAlnrflI' // Development fallback
-);
+// API Keys (REQUIRED)
+export const GEMINI_API_KEY = getEnv('GEMINI_API_KEY');
 
-// Blockchain Configuration - Sepolia Testnet (Default)
-export const MNEE_TOKEN_ADDRESS_SEPOLIA = getEnv(
-  'MNEE_TOKEN_ADDRESS',
-  '0x2E96901a92AB07a9Cf6D2570399eB1c71775A272'
-);
+// Blockchain Configuration - Sepolia Testnet (Development)
+export const MNEE_TOKEN_ADDRESS_SEPOLIA = getEnv('MNEE_TOKEN_ADDRESS');
+export const TASK_ESCROW_ADDRESS_SEPOLIA = getEnv('TASK_ESCROW_ADDRESS');
 
-export const TASK_ESCROW_ADDRESS_SEPOLIA = getEnv(
-  'TASK_ESCROW_ADDRESS',
-  '0x097cc5405702dd70116367a4b85158881E8253a0'
-);
-
-// Blockchain Configuration - Ethereum Mainnet (When Deployed)
-// For mainnet, set these environment variables in Vercel
-export const MNEE_TOKEN_ADDRESS_MAINNET = getEnv(
-  'MNEE_TOKEN_ADDRESS_MAINNET',
-  '0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF'
-);
-
-export const TASK_ESCROW_ADDRESS_MAINNET = getEnv(
-  'TASK_ESCROW_ADDRESS_MAINNET',
-  '' // Must be set for mainnet
-);
+// Blockchain Configuration - Ethereum Mainnet (Production)
+// Only needed if deploying to mainnet - optional
+export const MNEE_TOKEN_ADDRESS_MAINNET = import.meta.env.VITE_MNEE_TOKEN_ADDRESS_MAINNET || '';
+export const TASK_ESCROW_ADDRESS_MAINNET = import.meta.env.VITE_TASK_ESCROW_ADDRESS_MAINNET || '';
 
 // Registered Agents on the Platform - Demo Agent
 export const AGENTS = [
