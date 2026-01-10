@@ -50,6 +50,15 @@ EtherAgent is a **programmable money platform** that demonstrates how AI agents 
 - **MNEE Stablecoin** (0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF on Ethereum Mainnet)
 - USD-backed, stable value for commerce
 
+### 📱 **Mobile & Responsive Design**
+- **Fully Responsive UI** - Works seamlessly on desktop, tablet, and mobile
+- **Light Blue Button Theme** - All CTAs use consistent light blue (sky-400) styling
+- **Mobile-First Layout** - Optimized component spacing for small screens
+- **Adaptive Navigation** - Responsive header with mobile-friendly controls
+- **Touch-Friendly** - Large touch targets for mobile interaction
+- **Smart Text Truncation** - Contract addresses intelligently shortened on mobile
+- **MetaMask Mobile App Integration** - Automatic deep linking on iOS/Android
+
 ### 🌐 **Network Support**
 - **Current**: Ethereum Sepolia Testnet (for demo)
 - **Production**: Ethereum Mainnet with real MNEE (see [MNEE_MAINNET_SETUP.md](./MNEE_MAINNET_SETUP.md))
@@ -78,9 +87,33 @@ EtherAgent is a **programmable money platform** that demonstrates how AI agents 
 ### Prerequisites
 - **Node.js** 16.x or higher
 - **npm** or **yarn**
-- **MetaMask** browser extension
+- **MetaMask** browser extension (Desktop) or **MetaMask Mobile App** (Mobile)
 - **Sepolia Testnet ETH** (for gas fees) - Get from [Sepolia Faucet](https://www.infura.io/faucet/sepolia)
 - **Gemini API Key** - Get from [Google AI Studio](https://aistudio.google.com/apikey)
+
+#### 📱 Mobile Users - Important!
+
+**For optimal experience on mobile devices:**
+
+1. **Option 1: MetaMask Mobile App (Recommended)**
+   - Download [MetaMask for iOS](https://apps.apple.com/app/metamask/id1438144202) or [Android](https://play.google.com/store/apps/details?id=io.metamask)
+   - Open EtherAgent **inside MetaMask's built-in browser**
+   - MetaMask browser has full Web3 capabilities
+   - Simply copy this link and paste it in MetaMask browser:
+     ```
+     https://ether-agent.vercel.app
+     ```
+
+2. **Option 2: Web3-Enabled Mobile Browser**
+   - Use [Brave Browser](https://brave.com/download/) (has built-in MetaMask)
+   - Or [Opera Browser](https://www.opera.com/mobile) (supports Web3)
+   - Enable MetaMask or Web3 provider in browser settings
+
+3. **Desktop Users**
+   - Install [MetaMask extension](https://metamask.io/download/)
+   - Use Chrome, Firefox, Safari, or Edge
+
+**Why:** Mobile Safari and Chrome don't natively support Web3 wallet injection. MetaMask mobile app browser solves this.
 
 ### Setup Steps
 
@@ -111,6 +144,8 @@ EtherAgent is a **programmable money platform** that demonstrates how AI agents 
    npm run dev
    ```
    Open [http://localhost:5173](http://localhost:5173) in your browser
+   
+   ✨ **Mobile Testing:** Open the dev URL on your mobile device or use Chrome DevTools device emulation (F12 → Toggle device toolbar)
 
 6. **Build for production:**
    ```bash

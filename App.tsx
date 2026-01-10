@@ -177,26 +177,26 @@ const App: React.FC = () => {
             <span className="font-bold text-xl tracking-tight">EtherAgent</span>
           </div>
           
-          <div className="flex items-center gap-4">
-             <div className="bg-slate-800 p-1 rounded-lg flex text-sm font-medium">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto">
+             <div className="bg-slate-800 p-1 rounded-lg flex text-xs sm:text-sm font-medium">
                <button 
                  onClick={() => setMode('CLIENT')}
-                 className={`px-4 py-1.5 rounded-md transition-all ${mode === 'CLIENT' ? 'bg-slate-600 text-white shadow' : 'text-slate-400 hover:text-white'}`}
+                 className={`px-2 sm:px-4 py-1.5 rounded-md transition-all ${mode === 'CLIENT' ? 'bg-sky-400 text-slate-900 shadow font-bold' : 'text-slate-400 hover:text-white'}`}
                >
                  Client
                </button>
                <button 
                  onClick={() => setMode('AGENT')}
-                 className={`px-4 py-1.5 rounded-md transition-all ${mode === 'AGENT' ? 'bg-eth-600 text-white shadow' : 'text-slate-400 hover:text-white'}`}
+                 className={`px-2 sm:px-4 py-1.5 rounded-md transition-all ${mode === 'AGENT' ? 'bg-sky-400 text-slate-900 shadow font-bold' : 'text-slate-400 hover:text-white'}`}
                >
                  Agent
                </button>
              </div>
 
              {web3State.isConnected ? (
-                <div className="hidden sm:flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
                   {userRole && (
-                    <div className={`px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 ${
+                    <div className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 ${
                       userRole === 'client' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
                       userRole === 'agent' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' :
                       'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
@@ -206,12 +206,17 @@ const App: React.FC = () => {
                         userRole === 'agent' ? 'bg-purple-400' :
                         'bg-cyan-400'
                       }`} />
-                      {userRole === 'client' ? 'Client' : userRole === 'agent' ? 'Agent' : 'Client & Agent'}
+                      <span className="hidden sm:inline">
+                        {userRole === 'client' ? 'Client' : userRole === 'agent' ? 'Agent' : 'Client & Agent'}
+                      </span>
+                      <span className="sm:hidden">
+                        {userRole === 'client' ? 'C' : userRole === 'agent' ? 'A' : 'C&A'}
+                      </span>
                     </div>
                   )}
-                  <div className="bg-slate-800/50 px-3 py-1.5 rounded-lg border border-slate-700 flex items-center gap-2">
+                  <div className="bg-slate-800/50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-slate-700 flex items-center gap-2 text-xs sm:text-sm">
                     <div className="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)]" />
-                    <span className="text-sm font-mono text-slate-300">
+                    <span className="font-mono text-slate-300">
                     {web3State.address?.slice(0, 6)}...{web3State.address?.slice(-4)}
                     </span>
                   </div>
@@ -220,12 +225,13 @@ const App: React.FC = () => {
                 <Button 
                   onClick={connectWallet}
                   isLoading={isConnecting}
-                  className="bg-eth-600 hover:bg-eth-500 text-white !py-1.5 !text-sm"
+                  className="!py-1.5 !text-xs sm:!text-sm"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
-                  Connect Wallet
+                  <span className="hidden sm:inline">Connect Wallet</span>
+                  <span className="sm:hidden">Connect</span>
                 </Button>
              )}
           </div>
@@ -251,12 +257,12 @@ const App: React.FC = () => {
             </div>
         )}
 
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-1">
+        <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center mb-8">
+          <div className="order-2 md:order-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">
               {mode === 'CLIENT' ? 'Manage Tasks' : 'Agent Dashboard'}
             </h1>
-            <p className="text-slate-400">
+            <p className="text-sm sm:text-base text-slate-400">
               {mode === 'CLIENT' 
                 ? 'Create tasks, escrow funds, and approve work.' 
                 : 'Browse assigned tasks and use EtherAgentAI to complete them.'}
@@ -264,21 +270,22 @@ const App: React.FC = () => {
           </div>
           
           {mode === 'CLIENT' && (
-            <Button onClick={() => setShowCreateModal(true)} disabled={isWrongNetwork || !web3State.isConnected}>
-              + Create New Task
+            <Button onClick={() => setShowCreateModal(true)} disabled={isWrongNetwork || !web3State.isConnected} className="order-1 md:order-2 w-full md:w-auto">
+              <span className="hidden sm:inline">+ Create New Task</span>
+              <span className="sm:hidden">+ New Task</span>
             </Button>
           )}
         </div>
 
         {/* Info Banner */}
-        <div className="bg-blue-900/20 border border-blue-500/20 rounded-lg p-4 mb-8 flex items-start gap-3">
+        <div className="bg-blue-900/20 border border-blue-500/20 rounded-lg p-3 sm:p-4 mb-8 flex flex-col sm:flex-row items-start gap-3">
           <svg className="w-5 h-5 text-blue-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <div className="text-sm text-blue-200">
+          <div className="text-xs sm:text-sm text-blue-200 w-full">
             <p className="font-semibold mb-1">System Status: {web3State.isConnected ? "Connected to Sepolia" : "Not Connected"}</p>
-            <p className="opacity-80">
-                Current Contract: <code className="bg-blue-900/40 px-1 rounded">{(web3Service.escrowContract?.target as string) || "None"}</code>
+            <p className="opacity-80 break-all">
+                Current Contract: <code className="bg-blue-900/40 px-1 rounded text-xs">{(web3Service.escrowContract?.target as string) || "None"}</code>
             </p>
           </div>
         </div>

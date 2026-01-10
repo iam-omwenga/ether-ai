@@ -39,14 +39,14 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ onClose, onSuccess })
   }, [useCustomAgent, customAgent, agent, amount, description, onSuccess]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-      <div className="bg-slate-850 rounded-2xl border border-slate-700 w-full max-w-lg shadow-2xl overflow-hidden">
-        <div className="p-6 border-b border-slate-700 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-white">Create New Task</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white">&times;</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-3 sm:p-4">
+      <div className="bg-slate-850 rounded-2xl border border-slate-700 w-full max-w-lg shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
+        <div className="p-4 sm:p-6 border-b border-slate-700 flex justify-between items-center sticky top-0 bg-slate-850">
+          <h2 className="text-lg sm:text-xl font-bold text-white">Create New Task</h2>
+          <button onClick={onClose} className="text-slate-400 hover:text-white text-2xl">&times;</button>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
           
           <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 text-xs text-amber-300">
             ⚠️ <strong>Select Agent:</strong> The agent you select must use the same wallet address to submit their work. Share this task ID and wallet address with them.
@@ -141,9 +141,10 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ onClose, onSuccess })
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button type="button" variant="ghost" onClick={onClose} className="flex-1">Cancel</Button>
-            <Button type="submit" isLoading={loading} className="flex-1">
-              Escrow Funds & Create
+            <Button type="button" variant="ghost" onClick={onClose} className="flex-1 text-sm sm:text-base">Cancel</Button>
+            <Button type="submit" isLoading={loading} className="flex-1 text-sm sm:text-base">
+              <span className="hidden sm:inline">Escrow Funds & Create</span>
+              <span className="sm:hidden">Create Task</span>
             </Button>
           </div>
         </form>

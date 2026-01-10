@@ -100,10 +100,10 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, mode, onRefresh }) => {
   const statusText = ["Open", "Submitted", "Completed", "Disputed", "Cancelled"];
 
   return (
-    <div className="bg-slate-850 border border-slate-700 rounded-xl p-6 shadow-xl hover:border-eth-500/30 transition-all duration-300 flex flex-col h-full">
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
+    <div className="bg-slate-850 border border-slate-700 rounded-xl p-4 sm:p-6 shadow-xl hover:border-sky-400/30 transition-all duration-300 flex flex-col h-full">
+      <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-4">
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-2">
             <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border uppercase tracking-wide ${statusColors[task.status]}`}>
               {statusText[task.status]}
             </span>
@@ -111,17 +111,17 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, mode, onRefresh }) => {
               {new Date(task.createdAt).toLocaleDateString()}
             </span>
           </div>
-          <h3 className="text-lg font-bold text-white">Task #{task.id}</h3>
+          <h3 className="text-base sm:text-lg font-bold text-white">Task #{task.id}</h3>
         </div>
-        <div className="text-right bg-slate-900/50 px-3 py-1.5 rounded-lg border border-slate-800">
-          <div className="text-xl font-mono text-eth-400 font-bold">{task.amount} MNEE</div>
+        <div className="text-right bg-slate-900/50 px-3 py-1.5 rounded-lg border border-slate-800 flex-shrink-0">
+          <div className="text-lg sm:text-xl font-mono text-sky-400 font-bold">{task.amount} MNEE</div>
           <div className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Escrowed</div>
         </div>
       </div>
 
-      <div className="mb-6 flex-grow">
+      <div className="mb-4 sm:mb-6 flex-grow">
         <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Requirements</h4>
-        <p className="text-slate-200 text-sm leading-relaxed whitespace-pre-wrap">{task.description}</p>
+        <p className="text-slate-200 text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">{task.description}</p>
       </div>
 
       {task.result && (
@@ -143,10 +143,10 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, mode, onRefresh }) => {
 
       {/* Agent Actions */}
       {mode === 'AGENT' && task.status === TaskStatus.OPEN && (
-        <div className="space-y-3 pt-4 border-t border-slate-800 mt-auto">
+        <div className="space-y-2 sm:space-y-3 pt-4 border-t border-slate-800 mt-auto">
            {!resultInput ? (
-               <Button onClick={handleAIWork} isLoading={loading} className="w-full bg-gradient-to-r from-eth-600 to-indigo-600 hover:from-eth-500 hover:to-indigo-500">
-                 <span className="mr-2 text-lg">✨</span> EtherAgentAI
+               <Button onClick={handleAIWork} isLoading={loading} className="w-full text-sm sm:text-base">
+                 <span className="mr-2 text-lg">✨</span> <span className="hidden sm:inline">EtherAgentAI</span><span className="sm:hidden">AI</span>
                </Button>
            ) : (
                <div className="space-y-3 animate-fade-in">
