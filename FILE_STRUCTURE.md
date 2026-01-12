@@ -11,7 +11,7 @@ ether-agent/
 │   ├── vite.config.ts ✅ MODIFIED - Code splitting & optimization
 │   ├── index.html ✅ MODIFIED - Resource preloading & optimization
 │   ├── index.tsx (unchanged - uses improved services)
-│   └── constants.ts
+│ 
 │
 ├── 🎨 React Components
 │   └── components/
@@ -74,7 +74,7 @@ ether-agent/
 │
 ├── 📚 Types & Constants
 │   ├── types.ts
-│   └── constants.ts
+│   
 │
 └── 📖 Documentation (NEW)
     ├── QUICK_START.md ✅ NEW

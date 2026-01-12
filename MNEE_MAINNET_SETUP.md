@@ -161,8 +161,6 @@ async switchNetwork(chainId: number) {
 Create or update `.env.local`:
 
 ```bash
-# .env.local
-VITE_GEMINI_API_KEY=AIzaSyDr0b20bs06T2EN9wo6LfKPlS0XAlnrflI
 
 # Mainnet Configuration
 VITE_MNEE_TOKEN_ADDRESS=0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF
