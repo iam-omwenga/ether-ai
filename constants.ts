@@ -1,35 +1,35 @@
 /// <reference types="vite/client" />
 
 // ============================================
-// Environment-based Configuration
+// Hardcoded Configuration & Platform Optimization
 // ============================================
-// All sensitive values (API keys, addresses) come from environment variables
-// NO hardcoded fallbacks - use .env.local locally, Vercel dashboard for production
+// Direct configuration with platform-specific optimizations
 
-const getEnv = (key: string): string => {
-  const value = import.meta.env[`VITE_${key}`];
-  if (!value) {
-    throw new Error(
-      `❌ Missing environment variable: VITE_${key}\n` +
-      `See .env.example for required configuration.\n` +
-      `Local: Copy .env.example to .env.local and fill in your values.\n` +
-      `Vercel: Set in Vercel Project Settings → Environment Variables`
-    );
+// Detect platform for optimizations
+const detectPlatform = () => {
+  if (typeof window === 'undefined') {
+    return { isMobile: false, isTablet: false, isDesktop: true };
   }
-  return value;
+  const ua = navigator.userAgent.toLowerCase();
+  const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/.test(ua);
+  const isTablet = /ipad|android(?!.*mobi)/.test(ua);
+  return { isMobile, isTablet, isDesktop: !isMobile && !isTablet };
 };
 
-// API Keys (REQUIRED)
-export const GEMINI_API_KEY = getEnv('GEMINI_API_KEY');
+const platform = detectPlatform();
 
-// Blockchain Configuration - Sepolia Testnet (Development)
-export const MNEE_TOKEN_ADDRESS_SEPOLIA = getEnv('MNEE_TOKEN_ADDRESS');
-export const TASK_ESCROW_ADDRESS_SEPOLIA = getEnv('TASK_ESCROW_ADDRESS');
+// API Keys
+export const GEMINI_API_KEY = 'AIzaSyDpobTPHK2E5ov5sM9aY77Ap7-qFe00nyY';
 
-// Blockchain Configuration - Ethereum Mainnet (Production)
-// Only needed if deploying to mainnet - optional
-export const MNEE_TOKEN_ADDRESS_MAINNET = import.meta.env.VITE_MNEE_TOKEN_ADDRESS_MAINNET || '';
-export const TASK_ESCROW_ADDRESS_MAINNET = import.meta.env.VITE_TASK_ESCROW_ADDRESS_MAINNET || '';
+// Blockchain Configuration
+export const MNEE_TOKEN_ADDRESS = '0x2E96901a92AB07a9Cf6D2570399eB1c71775A272';
+export const TASK_ESCROW_ADDRESS = '0x097cc5405702dd70116367a4b85158881E8253a0';
+
+// Legacy exports for compatibility
+export const MNEE_TOKEN_ADDRESS_SEPOLIA = '0x2E96901a92AB07a9Cf6D2570399eB1c71775A272';
+export const TASK_ESCROW_ADDRESS_SEPOLIA = '0x097cc5405702dd70116367a4b85158881E8253a0';
+export const MNEE_TOKEN_ADDRESS_MAINNET = '0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF';
+export const TASK_ESCROW_ADDRESS_MAINNET = '';
 
 // Registered Agents on the Platform - Demo Agent
 export const AGENTS = [
@@ -42,6 +42,77 @@ export const AGENTS = [
     verified: true
   }
 ];
+
+// ============================================
+// Platform-Specific Optimization Settings
+// ============================================
+export const PLATFORM_CONFIG = {
+  isMobile: platform.isMobile,
+  isTablet: platform.isTablet,
+  isDesktop: platform.isDesktop,
+};
+
+// Performance optimizations based on platform
+export const PERFORMANCE_CONFIG = {
+  // Debounce delays (ms) - shorter on desktop, longer on mobile
+  debounceDelay: platform.isMobile ? 500 : 300,
+  // Throttle limits (ms) - more aggressive on mobile
+  throttleLimit: platform.isMobile ? 1000 : 500,
+  // Request idle callback timeout - longer on mobile for battery savings
+  idleCallbackTimeout: platform.isMobile ? 3000 : 1000,
+  // Image optimization - lower quality on mobile
+  imageQuality: platform.isMobile ? 0.7 : 0.95,
+  // Animation frame rate - reduced on mobile for performance
+  animationEnabled: !platform.isMobile, // Disable animations on mobile
+  // API retry count - more retries on mobile for network reliability
+  maxRetries: platform.isMobile ? 5 : 3,
+  // Cache TTL (Time To Live in ms)
+  cacheTTL: platform.isMobile ? 300000 : 600000, // 5min mobile, 10min desktop
+};
+
+// UI Layout configuration based on platform
+export const UI_CONFIG = {
+  // Modal/Dialog settings
+  modal: {
+    animationDuration: platform.isMobile ? 200 : 300,
+    backdropBlur: platform.isMobile ? '2px' : '4px',
+    fontSize: platform.isMobile ? '14px' : '16px',
+  },
+  // Button settings
+  button: {
+    padding: platform.isMobile ? '10px 16px' : '12px 20px',
+    fontSize: platform.isMobile ? '14px' : '16px',
+    minTouchTarget: platform.isMobile ? 44 : 32, // 44px minimum touch target on mobile
+  },
+  // Card/Container settings
+  container: {
+    maxWidth: platform.isMobile ? '100%' : platform.isTablet ? '90%' : '1200px',
+    padding: platform.isMobile ? '12px' : '20px',
+    borderRadius: platform.isMobile ? '8px' : '12px',
+    gap: platform.isMobile ? '8px' : '16px',
+  },
+  // Text input settings
+  input: {
+    fontSize: platform.isMobile ? '16px' : '14px', // 16px on mobile to prevent zoom
+    minHeight: platform.isMobile ? 44 : 36,
+    padding: platform.isMobile ? '12px' : '8px 12px',
+  },
+  // List/Grid settings
+  list: {
+    itemHeight: platform.isMobile ? 56 : 48,
+    columns: platform.isMobile ? 1 : platform.isTablet ? 2 : 3,
+  },
+};
+
+// Network optimization
+export const NETWORK_CONFIG = {
+  // Timeout for API requests (ms)
+  requestTimeout: platform.isMobile ? 15000 : 10000,
+  // Retry delay (ms)
+  retryDelay: platform.isMobile ? 2000 : 1000,
+  // Connection pooling - more aggressive on mobile
+  maxConcurrentRequests: platform.isMobile ? 2 : 6,
+};
 
 // ABIs
 export const ERC20_ABI = [
